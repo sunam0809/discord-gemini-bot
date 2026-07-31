@@ -54,7 +54,8 @@ export async function startBot(): Promise<void> {
     }
 
     if (cmd.commandName === "대화시작") {
-      const channelId = cmd.options.getString("채널아이디", true).trim();
+      const channel = cmd.options.getChannel("채널", true);
+      const channelId = channel.id;
       activeChannelId = channelId;
       chatHistory.set(channelId, []);
       await cmd.reply(

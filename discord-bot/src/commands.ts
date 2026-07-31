@@ -2,17 +2,19 @@ import {
   REST,
   Routes,
   SlashCommandBuilder,
+  ChannelType,
   type RESTPostAPIChatInputApplicationCommandsJSONBody,
 } from "discord.js";
 
 const commands: RESTPostAPIChatInputApplicationCommandsJSONBody[] = [
   new SlashCommandBuilder()
     .setName("대화시작")
-    .setDescription("Gemini 봇이 응답할 채널을 설정합니다")
-    .addStringOption((opt) =>
+    .setDescription("봇이 응답할 채널을 설정합니다")
+    .addChannelOption((opt) =>
       opt
-        .setName("채널아이디")
-        .setDescription("봇이 대화할 채널 ID (채널 우클릭 → ID 복사)")
+        .setName("채널")
+        .setDescription("봇이 대화할 채널을 선택하세요")
+        .addChannelTypes(ChannelType.GuildText)
         .setRequired(true),
     )
     .toJSON(),
