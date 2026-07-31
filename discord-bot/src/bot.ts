@@ -39,10 +39,19 @@ export async function startBot(): Promise<void> {
     partials: [Partials.Channel],
   });
 
+  // 슬래시 커맨드 허용 유저 ID
+  const ALLOWED_USER_ID = "1531640611977957446";
+
   // ── 슬래시 커맨드 처리 ──────────────────────────────────────
   client.on(Events.InteractionCreate, async (interaction) => {
     if (!interaction.isChatInputCommand()) return;
     const cmd = interaction as ChatInputCommandInteraction;
+
+    // 권한 체크
+    if (cmd.user.id !== ALLOWED_USER_ID) {
+      await cmd.reply({ content: "❌ 이 명령어를 사용할 권한이 없습니다.", ephemeral: true });
+      return;
+    }
 
     if (cmd.commandName === "대화시작") {
       const channelId = cmd.options.getString("채널아이디", true).trim();
