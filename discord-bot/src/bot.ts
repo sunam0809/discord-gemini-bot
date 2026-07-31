@@ -103,9 +103,10 @@ export async function startBot(): Promise<void> {
   client.on(Events.MessageCreate, async (message: Message) => {
     // 봇 메시지 무시
     if (message.author.bot) return;
-    // !대화 프리픽스 확인 (채널 제한 있을 때는 지정 채널에서만, 없으면 전체)
+    // !대화 프리픽스 확인
     if (!message.content.startsWith(PREFIX)) return;
-    if (activeChannelId && message.channelId !== activeChannelId) return;
+    // 지정된 채널에서만 작동
+    if (!activeChannelId || message.channelId !== activeChannelId) return;
 
     // 프리픽스 이후 내용 추출
     const userInput = message.content.slice(PREFIX.length).trim();
