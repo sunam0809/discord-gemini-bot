@@ -103,10 +103,9 @@ export async function startBot(): Promise<void> {
   client.on(Events.MessageCreate, async (message: Message) => {
     // 봇 메시지 무시
     if (message.author.bot) return;
-    // 설정된 채널이 아니면 무시
-    if (!activeChannelId || message.channelId !== activeChannelId) return;
-    // !대화 프리픽스 확인
+    // !대화 프리픽스 확인 (채널 제한 있을 때는 지정 채널에서만, 없으면 전체)
     if (!message.content.startsWith(PREFIX)) return;
+    if (activeChannelId && message.channelId !== activeChannelId) return;
 
     // 프리픽스 이후 내용 추출
     const userInput = message.content.slice(PREFIX.length).trim();
@@ -120,7 +119,8 @@ export async function startBot(): Promise<void> {
       await message.channel.sendTyping();
     }
 
-    const history = chatHistory.get(activeChannelId) ?? [];
+    const historyKey = message.channelId;
+    const history = chatHistory.get(historyKey) ?? [];
 
     try {
       const reply = await askAI(history, userInput);
@@ -129,7 +129,7 @@ export async function startBot(): Promise<void> {
       history.push({ role: "user", text: userInput });
       history.push({ role: "assistant", text: reply });
       while (history.length > MAX_HISTORY) history.splice(0, 2);
-      chatHistory.set(activeChannelId, history);
+      chatHistory.set(historyKey, history);
 
       // Discord 2000자 제한 처리
       if (reply.length <= 2000) {
